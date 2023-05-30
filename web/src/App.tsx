@@ -1,12 +1,16 @@
+import { useEffect, useRef, useState } from "react";
+
 const App = () => {
   return (
-    <div className="h-screen w-screen flex items-center justify-center">
+    <div className="h-screen w-screen flex flex-col items-center justify-center">
       <FileInput />
+      <ImageList />
     </div>
   )
 }
 
 const FileInput = () => {
+  const inputFileRef = useRef<HTMLInputElement>(null)
 
   const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -17,18 +21,78 @@ const FileInput = () => {
     }
   }
 
+  const handleClickSendButton = async () => {
+    
+    const file = inputFileRef.current?.files?.[0]
+    
+    if (!file) return;
+
+    let reader = new FileReader()
+    reader.readAsDataURL(file)
+
+    reader.onload = async (e) => {
+      const formData = { data: e.target?.result, filename: file.name }
+
+      return await fetch('http://localhost:3333/upload', {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(res => res.json())
+      .then(res => console.log(res))
+      .catch(err => console.log(err))
+
+    }
+  }
+
   return (
-    <div className="max-w-[50%] m-auto items-center justify-center flex flex-col">
+    <div className="max-w-[50%] m-auto items-center justify-center flex flex-col gap-4">
       <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Upload file</label>
       <input className="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" 
         id="file_input" 
         type="file"
         about="Upload file"
         onChange={(e) => handleChangeFile(e)}
+        ref={inputFileRef}
       />
+      <button
+        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+        onClick={handleClickSendButton}
+      >Enviar</button>
     </div>
   )
 }
 
-export { App }
+const ImageList = () => {
+  const [images, setImages] = useState<ImageProps[]>([])
+
+  interface ImageProps {
+    id: string;
+    data: string;
+    filename: string;
+  }
+
+  useEffect(() => {
+    fetch('http://localhost:3333/images')
+      .then(res => res.json())
+      .then(res => setImages(res))
+      .catch(err => console.log(err))
+  }, [])
+
+
+  return (
+    <div className="max-w-[50%] m-auto items-center justify-center flex flex-col gap-4">
+      {images.length > 0 ? images.map((image: ImageProps) => (
+        <img key={image.id} src={image.data} alt={image.filename} className="w-10 h-10" />
+      )) : (
+        <p className="text-gray-400">Nenhuma imagem encontrada</p>
+      )}
+    </div>
+  )
+
+}
+
+export { App };
 
