@@ -4,18 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx src/index.ts --port 3333",
+    "dev": "tsx --watch src/index.ts --port 3333",
     "start": "node dist/src/index.js"
   },
   "author": "Cassiano Junior",
   "license": "ISC",
   "devDependencies": {
+    "@types/shortid": "^0.0.29",
     "eslint": "^8.41.0",
     "prettier": "^2.8.8",
     "tsx": "^3.12.7",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "zod": "^3.21.4"
   },
   "dependencies": {
-    "fastify": "^4.17.0"
+    "@fastify/cors": "^8.3.0",
+    "fastify": "^4.17.0",
+    "shortid": "^2.2.16"
   }
 }
