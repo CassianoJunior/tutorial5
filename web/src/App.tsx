@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 const App = () => {
   return (
-    <div className="h-screen w-screen flex flex-col items-center justify-center">
+    <div className="h-screen m-auto max-w-5xl flex flex-row items-center justify-center">
       <FileInput />
       <ImageList />
     </div>
@@ -65,14 +65,15 @@ const FileInput = () => {
   )
 }
 
+interface ImageProps {
+  id: string;
+  data: string;
+  filename: string;
+}
+
 const ImageList = () => {
   const [images, setImages] = useState<ImageProps[]>([])
 
-  interface ImageProps {
-    id: string;
-    data: string;
-    filename: string;
-  }
 
   useEffect(() => {
     fetch('http://localhost:3333/images')
