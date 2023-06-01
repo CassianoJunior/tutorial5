@@ -374,3 +374,33 @@ async function bootstrap() {
 
 bootstrap();
 ```
+
+Agora, para o banco de dados em memória, basta criarmos uma classe que terá uma lista como atributo, como segue:
+
+```ts
+// src/database/inMemory.ts
+export type ImageProps = {
+  id: string
+  filename: string
+  data: string
+}
+
+export class InMemoryDatabase {
+  constructor(private images: ImageProps[]){}
+
+  save(image: ImageProps) {
+    this.images.push(image)
+  }
+
+  getById(id: string) {
+    return this.images.find(image => image.id === id)
+  }
+
+  getAll() {
+    return this.images
+  }
+}
+
+```
+
+Aqui definimos métodos para salvar uma imagem, buscar uma imagem por id e buscar todas as imagens.
