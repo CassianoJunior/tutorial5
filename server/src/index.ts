@@ -19,8 +19,8 @@ async function bootstrap() {
   fastify.post("/upload", async (request, reply) => {
     
     const bodySchema = z.object({
-      filename: z.string().nonempty(),
-      data: z.string().nonempty(),
+      filename: z.string().nonempty('Filename is required'),
+      data: z.string().nonempty('Image base64 data is required'),
     })
 
     const body = bodySchema.parse(request.body);
@@ -38,24 +38,30 @@ async function bootstrap() {
     return reply.status(201).send({ id: image.id });
   })
 
-  // fastify.get("/image/:id", async (request, reply) => {
+  fastify.get("/image/:id", async (request, reply) => {
 
-  //   const id = request.params.id;
+    const paramsSchema = z.object({
+      id: z.string().nonempty('Id is required'),
+    })
 
-  //   if (!id) {
-  //     return reply.status(400).send({ error: 'Id is required' });
-  //   }
+    const params = paramsSchema.parse(request.params);
 
-  //   const image = database.getById(id);
+    const { id } = params;
+
+    if (!id) {
+      return reply.status(400).send({ error: 'Id is required' });
+    }
+
+    const image = database.getById(id);
 
 
 
-  //   if (!image) {
-  //     return reply.status(404).send({ error: 'Image not found' });
-  //   }
+    if (!image) {
+      return reply.status(404).send({ error: 'Image not found' });
+    }
 
-  //   return reply.status(200).send({ filename: image.filename, data: image.data });
-  // })
+    return reply.status(200).send({ filename: image.filename, data: image.data });
+  })
 
   fastify.get("/images", async (request, reply) => {
     const images = database.getAll();
@@ -63,9 +69,9 @@ async function bootstrap() {
     return reply.status(200).send(images);
   })
 
-  // fastify.get("/", async (request, reply) => {
-  //   return { hello: "world" };
-  // })
+  fastify.get("/", async (request, reply) => {
+    return { hello: "world" };
+  })
 
   await fastify.listen({ port: 3333 });
 }

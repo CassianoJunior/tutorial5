@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx --watch src/index.ts --port 3333",
+    "dev": "tsx watch src/index.ts",
     "start": "node dist/src/index.js"
   },
   "author": "Cassiano Junior",
