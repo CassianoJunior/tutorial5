@@ -4,31 +4,25 @@
 
 ## Setup inicial
 
-Para iniciar, o projeto foi dividido em 2 partes: Front-end (usando [Vite](https://vitejs.dev) e [React](https://react.dev)) e Back-end (usando [Node](https://nodejs.org/en) e [Fastify](https://www.fastify.io)).
+Para iniciar, o projeto foi dividido em 2 partes: Front-end (usando [Next](https://nextjs.org/docs) e [React](https://react.dev)) e Back-end (usando [Node](https://nodejs.org/en) e [Fastify](https://www.fastify.io)).
 O projeto front-end está localizado na pasta web, enquanto o projeto back-end, na pasta server.
 
 ### Front-end
 
-Para iniciar e criar um novo projeto ```Vite``` do zero, basta entrar no terminal e digitar o seguinte comando.
+Para iniciar e criar um novo projeto ```Next``` do zero, basta entrar no terminal e digitar o seguinte comando.
 
 ```bash
-npm create vite@latest web -- --template react-ts
+npx create-next-app@latest web --use-npm
 ```
 
   Em que:
 
 - web é o nome da pasta onde o projeto será criado.
-- --template é uma flag que indica que iremos usar um template já pronto, e o template escolhido foi react usando [TypeScript](https://www.typescriptlang.org), por isso ```react-ts```.
+- --use-npm especifica o gerenciador de pacotes que iremos utilizar
 
-Após isso, responda sim (y), para a instalação do pacote ```create-vite```.
+Após isso, responda sim (Yes), para todas as perguntas que serão feitas.
 
-Agora, entre na pasta do projeto e instale as dependências iniciais. Faça isso com o seguinte comando no terminal:
-
-```bash
-cd web && npm i
-```
-
-Feito isso, na pasta do projeto digite ```npm run dev``` e abra o navegador na url ```http://localhost:5173``` e aparecerá uma página pronta do Vite.
+Agora, entre na pasta do projeto digite `npm run dev` no terminal e abra o navegador na url `http://localhost:3000` e aparecerá uma página pronta do **Next**.
 
 ### Back-end
 
@@ -76,16 +70,12 @@ Inicie o TypeScript:
 npx tsc --init --target es2020
 ```
 
-Agora, na parte ```scripts``` no arquivo ```package.json```, defina o seguinte comando:
+Agora, no arquivo ```package.json```:
 
 ```json
-...
-
-  "scripts": {
-    "dev": "tsx watch src/index.ts"
-  }
-
-...
+"scripts": {
+  "dev": "tsx watch src/index.ts"
+}
 ```
 
 Esse comando permite que nossa aplicação inicie em ambiente de desenvolviemnto, no endereço ```http://localhost:3333```
@@ -96,7 +86,7 @@ Crie o arquivo dentro da pasta ```src```.
 
 Para testar se está funcionando, cole o seguinte código no arquivo ```index.ts```:
 
-```typescript
+```ts
 import Fastify from "fastify";
 
 async function bootstrap() {
@@ -133,10 +123,11 @@ O problema dessa abordagem é a grande quantidade de dados, já que a codificaç
 Aqui, usaremos o elemento input do HMTL e definiremos ele como tipo **File** para que seja possível mover arquivos. Em seguida, definiremos uma função que será executada quando o usuário clicar no botão responsável por enviar esse arquivo. Veja abaixo:
 
 ```tsx
-// src/App.tsx
-import { useEffect, useRef, useState } from "react";
+// src/app/page.tsx'use client'
 
-// Componente principal
+import Image from "next/image";
+import { useRef, useState } from "react";
+
 const App = () => {
   return (
     <div className="h-screen m-auto max-w-5xl flex flex-row items-center justify-center">
@@ -146,18 +137,9 @@ const App = () => {
   )
 }
 
-/* 
-  Componente responsável por renderizar o formulário
-  e definir a função de envio 
-*/
 const FileInput = () => {
-  /* 
-  React Hook useRef: 
-  Anota a referência de um elemento para posterior identificação do mesmo.
-  */
   const inputFileRef = useRef<HTMLInputElement>(null)
 
-  // Funcão que será executada sempre que o usuário trocar o arquivo do input
   const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
 
@@ -167,20 +149,14 @@ const FileInput = () => {
     }
   }
 
-  /*
-    Função que será executada quadno o usuário clicar para enviar o arquivo para o servidor.
-    Aqui usamos a classe FileReader para transformar o arquivo em base64.
-    Depois usamos a fetch API para realizar a requisição para nosso servidor.
-  */
   const handleClickSendButton = async () => {
     
-    // Arquivo escolhido pelo usuário
     const file = inputFileRef.current?.files?.[0]
     
     if (!file) return;
 
     let reader = new FileReader()
-    reader.readAsDataURL(file) // Arquivo em base64
+    reader.readAsDataURL(file)
 
     reader.onload = async (e) => {
       const formData = { data: e.target?.result, filename: file.name }
@@ -201,18 +177,12 @@ const FileInput = () => {
 
   return (
     <div className="max-w-[50%] m-auto items-center justify-center flex flex-col gap-4">
-      <label 
-        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" 
-        htmlFor="file_input"
-      >
-        Upload file
-      </label>
-      <input 
-        className="
-          block w-full p-2 text-sm text-gray-900 border border-gray-300 
-          rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none
-          dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-        " 
+      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" 
+      htmlFor="file_input">Upload file</label>
+      <input className="block w-full p-2 text-sm text-gray-900 border border-gray-300 
+      rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 
+      focus:outline-none dark:bg-gray-700 
+      dark:border-gray-600 dark:placeholder-gray-400" 
         id="file_input" 
         type="file"
         about="Upload file"
@@ -220,63 +190,69 @@ const FileInput = () => {
         ref={inputFileRef}
       />
       <button
-        className="
-          text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 
-          font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 
-          dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800
-        "
+        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 
+        focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 
+        dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none 
+        dark:focus:ring-blue-800"
         onClick={handleClickSendButton}
       >Enviar</button>
     </div>
   )
 }
 
-// Interface para inferir o tipo da Imagem
 interface ImageProps {
   id: string;
   data: string;
   filename: string;
 }
 
-/*
-  Componente responsável fazer a requisição para o servidor
-  e listar as imagens retornadas
-*/
 const ImageList = () => {
   const [images, setImages] = useState<ImageProps[]>([])
 
 
-  useEffect(() => {
-    // Requisição para o servidor retornar as imagens
+  const handleClickUpdateButton = () => {
     fetch('http://localhost:3333/images')
       .then(res => res.json())
       .then(res => setImages(res))
       .catch(err => console.log(err))
-  }, [])
+  }
 
 
   return (
-    <div className="max-w-[50%] m-auto items-center justify-center flex flex-col gap-4">
-      {images.length > 0 ? images.map((image: ImageProps) => (
-        <img key={image.id} src={image.data} alt={image.filename} className="w-10 h-10" />
-      )) : (
-        <p className="text-gray-400">Nenhuma imagem encontrada</p>
-      )}
+      <div className="max-w-[50%] m-auto flex flex-col gap-16 items-center justify-center">
+        <div className=" items-center justify-center flex flex-col gap-4">
+          {images.length > 0 ? images.map((image: ImageProps) => (
+            <Image 
+              key={image.id} 
+              src={image.data} 
+              alt={image.filename}  
+              width={20} 
+              height={20} 
+              className="w-10 h-10" 
+            />
+          )) : (
+            <p className="text-gray-400">Nenhuma imagem encontrada</p>
+          )}
+        </div>
+        <button
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300
+          font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 
+          dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+          onClick={handleClickUpdateButton}
+          >Atualizar</button>
     </div>
   )
 
 }
 
-export { App };
+export default App 
 ```
-
-> Obs: Para a estilização ter efeito, veja a documentação do [TailwindCSS](https://tailwindcss.com/docs/installation) para configurar para o projeto.
 
 ### Lado do servidor
 
 Para preparmos o servidor, basta criarmos uma rota post em uma rota, aqui escolhemos `/upload`, mas pode ser qualquer nome. Após definirmos a rota, temos que definir o que o servidor vai fazer quando essa rota for chamada.
 Outra coisa importante é configurar o cors, para habilitar requisições do nosso front-end.
-Além disso, vamos definir um banco de dados em tempo de execução, apenas para efeito de demosntração de persitência de dados. Veja a seguir:
+Além disso, vamos definir um banco de dados em tempo de execução, apenas para efeito de demonstração de persitência de dados. Veja a seguir:
 
 ```ts
 // src/index.ts
