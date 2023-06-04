@@ -5,17 +5,17 @@
 ## Setup inicial
 
 Para iniciar, o projeto foi dividido em 2 partes: Front-end (usando [Next](https://nextjs.org/docs) e [React](https://react.dev)) e Back-end (usando [Node](https://nodejs.org/en) e [Fastify](https://www.fastify.io)).
-O projeto front-end está localizado na pasta web, enquanto o projeto back-end, na pasta server.
+O projeto front-end está localizado na pasta `web`, enquanto o projeto back-end, na pasta `server`.
 
 ### Front-end
 
-Para iniciar e criar um novo projeto ```Next``` do zero, basta entrar no terminal e digitar o seguinte comando.
+Para iniciar e criar um novo projeto `Next` do zero, basta entrar no terminal e digitar o seguinte comando:
 
 ```bash
 npx create-next-app@latest web --use-npm
 ```
 
-  Em que:
+Em que:
 
 - web é o nome da pasta onde o projeto será criado.
 - --use-npm especifica o gerenciador de pacotes que iremos utilizar
@@ -26,7 +26,7 @@ Agora, entre na pasta do projeto digite `npm run dev` no terminal e abra o naveg
 
 ### Back-end
 
-Para a criação do nosso servidor, crie uma pasta server na raiz do projeto. Assim, ficaremos com a seguinte estrutura:
+Para a criação do nosso servidor, crie uma pasta `server` na raiz do projeto. Assim, ficaremos com a seguinte estrutura:
 
 ```bash
 $PROJECT_ROOT
@@ -34,13 +34,13 @@ $PROJECT_ROOT
   └── web
 ```
 
-Feito isso, entre na pasta server e inicie um novo projeto Node. Para isso, dentro da pasta do projeto, basta abrir o terminal e digitar o comando:
+Feito isso, entre na pasta `server` e inicie um novo projeto Node. Para isso, dentro da pasta do projeto, basta abrir o terminal e digitar o comando:
 
 ```bash
 npm init -y
 ```
 
-Em que a flag ```-y``` indica sim como resposta para todas as perguntas realizadas. isso é feito para agilizar o processo.
+Em que a flag `-y` indica sim como resposta para todas as perguntas realizadas. Isso é feito para agilizar o processo.
 Agora basta instalar as dependências que vamos precisar para configurar nosso servidor:
 
 - Fastify - Framework HTTP para as requisições.
@@ -70,7 +70,7 @@ Inicie o TypeScript:
 npx tsc --init --target es2020
 ```
 
-Agora, no arquivo ```package.json```:
+Agora, no arquivo `package.json`:
 
 ```json
 "scripts": {
@@ -78,13 +78,13 @@ Agora, no arquivo ```package.json```:
 }
 ```
 
-Esse comando permite que nossa aplicação inicie em ambiente de desenvolviemnto, no endereço ```http://localhost:3333```
+Esse comando permite que nossa aplicação inicie em ambiente de desenvolviemnto, no endereço `http://localhost:3333`
 
-Agora, basta criarmos esse arquivo index.ts, que será a porta de entrada para nosso servidor.
+Agora, basta criarmos esse arquivo `index.ts`, que será a porta de entrada para nosso servidor.
 
-Crie o arquivo dentro da pasta ```src```.
+Crie o arquivo dentro da pasta `src`.
 
-Para testar se está funcionando, cole o seguinte código no arquivo ```index.ts```:
+Para testar se está funcionando, cole o seguinte código no arquivo `index.ts`:
 
 ```ts
 import Fastify from "fastify";
@@ -105,22 +105,22 @@ async function bootstrap() {
 bootstrap();
 ```
 
-Feito isso, digite o comando ```npm run dev``` no terminal e em seguida abra seu navegador no endereço ```http://localhost:3333```. No seu navegador, aparecerá algo como isso:
+Feito isso, digite o comando `npm run dev` no terminal e em seguida abra seu navegador no endereço `http://localhost:3333`. No seu navegador, aparecerá algo como isso:
 
 ```json
 hello: "world"
 ```
 
-Se apareceu está tudo certo, e você pode continuar com o tutorial. Caso algo dê errado revise os passos anteriores e certifique-se que os seguiu a risca.
+Se apareceu, está tudo certo, e você pode continuar com o tutorial. Caso algo dê errado revise os passos anteriores e certifique-se que os seguiu a risca.
 
 ## Manipulando imagens na aplicação
 
-Vamos entender agora, como transitar imagens na nossa aplicação. Existem muitas formas de fazer isso, e uma formas mais simples é transformar as imagens em *base64* e enviar para o servidor como string.
-O problema dessa abordagem é a grande quantidade de dados, já que a codificação em *base64* aumenta em pelo menos 33% do tamanho original. Mas como é uma aplicação simples, usaremos como exemplo.
+Vamos entender agora como transitar imagens na nossa aplicação. Existem muitas formas de fazer isso, e uma das formas mais simples é transformar as imagens em *base64* e enviar para o servidor como string.
+O problema dessa abordagem é a grande quantidade de dados, já que a codificação em *base64* aumenta em pelo menos 33% do tamanho original. Mas, como é uma aplicação simples, usaremos como exemplo.
 
 ### Lado do cliente
 
-Aqui, usaremos o elemento input do HMTL e definiremos ele como tipo **File** para que seja possível mover arquivos. Em seguida, definiremos uma função que será executada quando o usuário clicar no botão responsável por enviar esse arquivo. Veja abaixo:
+Aqui usaremos o elemento input do HMTL e definiremos ele como tipo **File** para que seja possível mover arquivos. Em seguida, definimos uma função que será executada quando o usuário clicar no botão responsável por enviar esse arquivo. Veja abaixo:
 
 ```tsx
 // src/app/page.tsx'use client'
@@ -250,12 +250,13 @@ export default App
 
 ### Lado do servidor
 
-Para preparmos o servidor, basta criarmos uma rota post em uma rota, aqui escolhemos `/upload`, mas pode ser qualquer nome. Após definirmos a rota, temos que definir o que o servidor vai fazer quando essa rota for chamada.
+Para preparmos o servidor, basta criarmos uma rota post no serivor. Aqui escolhemos `/upload`, mas pode ser qualquer nome. Após definirmos a rota, temos que definir o que o servidor vai fazer quando essa rota for chamada, para isso definimos uma função.
 Outra coisa importante é configurar o cors, para habilitar requisições do nosso front-end.
 Além disso, vamos definir um banco de dados em tempo de execução, apenas para efeito de demonstração de persitência de dados. Veja a seguir:
 
 ```ts
 // src/index.ts
+
 import cors from '@fastify/cors';
 import Fastify from "fastify";
 import { generate } from 'shortid';
@@ -355,6 +356,7 @@ Agora, para o banco de dados em memória, basta criarmos uma classe que terá um
 
 ```ts
 // src/database/inMemory.ts
+
 export type ImageProps = {
   id: string
   filename: string
