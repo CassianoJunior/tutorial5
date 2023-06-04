@@ -107,7 +107,7 @@ bootstrap();
 
 Feito isso, digite o comando `npm run dev` no terminal e em seguida abra seu navegador no endereço `http://localhost:3333`. No seu navegador, aparecerá algo como isso:
 
-```json
+```js
 hello: "world"
 ```
 
