@@ -1,7 +1,7 @@
 export type ImageProps = {
   id: string
   filename: string
-  data: string
+  url: string
 }
 
 export class InMemoryDatabase {

@@ -3,39 +3,49 @@ import Fastify from "fastify";
 import { generate } from 'shortid';
 import z from 'zod';
 import { InMemoryDatabase } from './database/inMemory';
+import { dropbox } from './lib/dropbox';
 
 async function bootstrap() {
   const fastify = Fastify({
     logger: true,
-    bodyLimit: 1048576 * 20, // 20MB
   });
   
   fastify.register(cors, {
     origin: '*',
   })
 
+  fastify.register(require('@fastify/multipart'), {
+    limits: {
+      fileSize: 20 * 1024 * 1024, // 20MB
+    }
+  })
+
   const database = new InMemoryDatabase([]);
 
   fastify.post("/upload", async (request, reply) => {
-    
     const bodySchema = z.object({
-      filename: z.string().nonempty('Filename is required'),
-      data: z.string().nonempty('Image base64 data is required'),
+      file: z.any()
     })
 
-    const body = bodySchema.parse(request.body);
+    const { file } = await request.file();
 
-    const { filename, data } = body;
+    console.log(file)
+    
+    const upload = await dropbox.filesUpload({path: `/${generate()}.png`, contents: file})
 
-    const image = {
-      id: generate(),
-      filename,
-      data,
-    }
+    const dbxImageId = upload.result.id;
 
-    database.save(image);
+    const share = await dropbox.sharingCreateSharedLinkWithSettings({path: dbxImageId});
 
-    return reply.status(201).send({ id: image.id });
+    const url = share.result.url;
+
+    const imageUrl = url.replace('dl=0', 'raw=1');
+
+    const imageId = generate();
+
+    database.save({filename: 'Teste', url: imageUrl, id: imageId});
+    
+    return reply.status(201).send({ id: imageId });
   })
 
   fastify.get("/image/:id", async (request, reply) => {
@@ -54,13 +64,11 @@ async function bootstrap() {
 
     const image = database.getById(id);
 
-
-
     if (!image) {
       return reply.status(404).send({ error: 'Image not found' });
     }
 
-    return reply.status(200).send({ filename: image.filename, data: image.data });
+    return reply.status(200).send({...image});
   })
 
   fastify.get("/images", async (request, reply) => {
