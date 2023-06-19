@@ -15,39 +15,24 @@ const App = () => {
 const FileInput = () => {
   const inputFileRef = useRef<HTMLInputElement>(null)
 
-  const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-
-    if (file) {
-      console.log(file)
-      console.log('size', file.size / 1024, 'KB')
-    }
-  }
-
   const handleClickSendButton = async () => {
-    
     const file = inputFileRef.current?.files?.[0]
     
     if (!file) return;
 
-    let reader = new FileReader()
-    reader.readAsDataURL(file)
+    const formData = new FormData()
+    formData.append('file', file)
 
-    reader.onload = async (e) => {
-      const formData = { data: e.target?.result, filename: file.name }
+    const res = await fetch('http://localhost:3333/upload', {
+      method: 'POST',
+      body: formData
+    })
 
-      return await fetch('http://localhost:3333/upload', {
-        method: 'POST',
-        body: JSON.stringify(formData),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(res => res.json())
-      .then(res => console.log(res))
-      .catch(err => console.log(err))
+    console.log(res)
 
-    }
+    const data = await res.json()
+
+    console.log(data)
   }
 
   return (
@@ -57,7 +42,6 @@ const FileInput = () => {
         id="file_input" 
         type="file"
         about="Upload file"
-        onChange={(e) => handleChangeFile(e)}
         ref={inputFileRef}
       />
       <button
@@ -70,7 +54,7 @@ const FileInput = () => {
 
 interface ImageProps {
   id: string;
-  data: string;
+  url: string;
   filename: string;
 }
 
@@ -90,7 +74,7 @@ const ImageList = () => {
       <div className="max-w-[50%] m-auto flex flex-col gap-16 items-center justify-center">
         <div className=" items-center justify-center flex flex-col gap-4">
           {images.length > 0 ? images.map((image: ImageProps) => (
-            <Image key={image.id} src={image.data} alt={image.filename}  width={20} height={20} className="w-10 h-10" />
+            <Image key={image.id} src={image.url} alt={image.filename}  width={150} height={150} className="w-10 h-10" />
           )) : (
             <p className="text-gray-400">Nenhuma imagem encontrada</p>
           )}
